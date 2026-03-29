@@ -8,7 +8,11 @@ def inject_demo_data():
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
         
-        # 1. Добавляем 5 фейковых активных объектов
+        # ОЧИСТКА: Удаляем старые демо-данные, чтобы не плодить дубликаты
+        cursor.execute("DELETE FROM user_triggers")
+        cursor.execute("DELETE FROM execution_logs")
+        
+        # 1. Добавляем объекты
         clients = [
             ("Wrocław_Dom_Kowalski", "https://webhook.site/mock1", 0.0),
             ("Legnica_Pompa_Ciepla", "https://webhook.site/mock2", 50.0),
@@ -18,29 +22,34 @@ def inject_demo_data():
         ]
         cursor.executemany("INSERT INTO user_triggers (user_label, webhook_url, threshold_pln_mwh) VALUES (?, ?, ?)", clients)
 
-        # 2. Генерируем успешные срабатывания за последние 3 дня (Аномалии RCE)
-        # Фильтр станет нечувствительным к регистру и пробелам
-        overvoltage_count = len(df_logs[df_logs['reason'].str.contains("253V|253 V|Ochrona", case=False, na=False)])
+        # 2. Генерируем ЛОГИ
         now = datetime.now()
-        
         logs = []
-        for i in range(12): # 12 срабатываний системы
-            # Случайное время в пределах последних 3 дней (обычно днем, когда солнце светит)
-            days_ago = random.randint(0, 2)
-            hour = random.randint(11, 15) 
-            minute = random.choice(["00", "15", "30", "45"])
+        
+        # Создаем 20 записей, чтобы статистика была видна
+        for i in range(20):
+            days_ago = random.randint(0, 3)
+            hour = random.randint(10, 16) # Пик солнца
+            simulated_time = (now - timedelta(days=days_ago)).replace(hour=hour, minute=random.choice([0, 15, 30, 45]), second=0)
             
-            simulated_time = (now - timedelta(days=days_ago)).replace(hour=hour, minute=int(minute), second=0)
+            client_label = random.choice(clients)[0]
             
-            # Генерируем низкую или отрицательную цену RCE (от -45.0 до 30.0 PLN)
-            mock_price = round(random.uniform(-45.0, 30.0), 2)
-            client = random.choice(clients)[0]
+            # ЧЕРЕДУЕМ: 50% случаев - 253V, 50% - RCE тарифы
+            if i % 2 == 0:
+                reason = "Ochrona 253V (Wykryto 253.4V)"
+                price = 0.0 # При защите цена не важна
+            else:
+                reason = "Tania energia z giełdy (RCE)"
+                price = round(random.uniform(-40.0, 25.0), 2) # Отрицательные цены для вау-эффекта
             
-            logs.append((client, simulated_time.strftime('%Y-%m-%d %H:%M:%S'), reasons[0], mock_price))
+            logs.append((client_label, simulated_time.strftime('%Y-%m-%d %H:%M:%S'), reason, price))
 
         cursor.executemany("INSERT INTO execution_logs (user_label, timestamp, reason, price_pln_mwh) VALUES (?, ?, ?, ?)", logs)
         conn.commit()
 
 if __name__ == "__main__":
     inject_demo_data()
-    print("✅ Демо-данные успешно интегрированы. Дашборд готов к презентации.")
+    print("🚀 БАЗА ОБНОВЛЕНА!")
+    print("- Объекты добавлены.")
+    print("- Логи 253V и RCE сгенерированы.")
+    print("Теперь обновляй дашборд.")
