@@ -5,7 +5,7 @@ from datetime import datetime
 
 st.set_page_config(page_title="RCE Autopilot | B2B Panel", page_icon="⚡", layout="wide")
 
-st.warning("⚠️ Środowisko Demonstracyjne (Demo). Panel Partnera B2B. Dane symulowane na podstawie API ENTSO-E.")
+
 
 st.title("⚡️ Panel Instalatora: Zarządzanie Taryfami RCE")
 st.markdown("""
