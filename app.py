@@ -6,10 +6,26 @@ from datetime import datetime
 # Конфигурация страницы
 st.set_page_config(page_title="Energy OS | Partner Panel", page_icon="⚡", layout="wide")
 
+# Убираем "белую хуйню" и фиксируем видимость текста
 st.markdown("""
     <style>
-    .main { background-color: #f8f9fa; }
-    .stMetric { background-color: #ffffff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 10px; }
+    /* Общий фон страницы */
+    .stApp { background-color: #f8f9fa; }
+    
+    /* Убираем фон, рамки и тени у метрик */
+    [data-testid="stMetric"] {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Принудительно делаем текст черным, чтобы он не сливался */
+    [data-testid="stMetricValue"] {
+        color: #1f1f1f !important;
+    }
+    [data-testid="stMetricLabel"] {
+        color: #4f4f4f !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -41,33 +57,29 @@ def load_data():
 df_logs, df_users = load_data()
 
 if not df_users.empty or not df_logs.empty:
-    # Метрики — это твои "солдаты" в переговорах
     m1, m2, m3, m4 = st.columns(4)
     
     with m1:
-        st.metric("Monitorowane Obiekty", len(df_users), help="Liczba aktywnych instalacji pod Twoją opieką")
+        st.metric("Monitorowane Obiekty", len(df_users))
     with m2:
         today = datetime.now().strftime('%Y-%m-%d')
         today_triggers = len(df_logs[df_logs['timestamp'].str.startswith(today)]) if not df_logs.empty else 0
-        st.metric("Interwencje (Dziś)", today_triggers, delta="System aktywny")
+        st.metric("Interwencje (Dziś)", today_triggers)
     with m3:
-        # Считаем только логи по защите 253V
         overvoltage_count = len(df_logs[df_logs['reason'].str.contains("253V")])
-        st.metric("Uratowane Cykle 253V", overvoltage_count, delta_color="normal")
+        st.metric("Uratowane Cykle 253V", overvoltage_count)
     with m4:
         min_price = df_logs['price_pln_mwh'].min() if not df_logs.empty else 0
-        st.metric("Najniższa Cena RCE", f"{min_price:.2f} PLN", help="Najniższa cena przechwycona dla Twoich klientów")
+        st.metric("Najniższa Cena RCE", f"{min_price:.2f} PLN")
 
     st.divider()
 
-    # Две колонки: Логи и Карта/Статус
     col_table, col_info = st.columns([2, 1])
 
     with col_table:
         st.subheader("📋 Ostatnie operacje systemowe")
         if not df_logs.empty:
             df_display = df_logs.sort_values(by="timestamp", ascending=False).head(15)
-            # Переименовываем для польского рынка
             df_display.columns = ['Data/Godzina', 'ID Klienta', 'Typ Akcji', 'Cena (PLN/MWh)']
             st.dataframe(df_display, use_container_width=True, hide_index=True)
         else:
@@ -76,17 +88,17 @@ if not df_users.empty or not df_logs.empty:
     with col_info:
         st.subheader("🛠 Narzędzia Partnera")
         with st.expander("🛡 Ochrona Napięciowa 253V"):
-            st.write("Algorytm aktywuje zrzut energii na grzałki przy 252.5V, stabilizując pracę falownika.")
+            st.write("Algorytm aktywuje zrzut energii na grzałki przy 252.5V.")
             st.progress(0.95, text="Skuteczność: 95%")
         
         with st.expander("📈 Optymalizacja Taryf RCE"):
-            st.write("Automatyczny start pomp ciepła i ładowarek EV w godzinach najniższych cen giełdowych.")
+            st.write("Automatyczny start pomp ciepła и ловарок EV.")
             st.button("Pobierz raport oszczędności (PDF)", use_container_width=True)
         
         st.warning("📅 **Next update:** Integracja z magazynami energii (BESS) - Q3 2026")
 
 else:
-    st.error("⚠️ Brak połączenia z bazą danych lub baza jest pusta. Uruchom 'inject_demo_data.py' dla demonstracji.")
+    st.error("⚠️ Brak połąчения z bazą данных.")
 
 st.markdown("---")
 col_bot_l, col_bot_r = st.columns(2)
