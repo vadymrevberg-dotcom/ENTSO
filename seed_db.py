@@ -19,7 +19,8 @@ def inject_demo_data():
         cursor.executemany("INSERT INTO user_triggers (user_label, webhook_url, threshold_pln_mwh) VALUES (?, ?, ?)", clients)
 
         # 2. Генерируем успешные срабатывания за последние 3 дня (Аномалии RCE)
-        reasons = ["Tania energia z giełdy (RCE)"]
+        # Фильтр станет нечувствительным к регистру и пробелам
+        overvoltage_count = len(df_logs[df_logs['reason'].str.contains("253V|253 V|Ochrona", case=False, na=False)])
         now = datetime.now()
         
         logs = []
