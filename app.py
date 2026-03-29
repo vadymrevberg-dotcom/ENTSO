@@ -7,10 +7,37 @@ from datetime import datetime
 st.set_page_config(page_title="Energy OS | Partner Panel", page_icon="⚡", layout="wide")
 
 # Кастомный CSS для "премиального" вида
+# Кастомный CSS для фиксации цветов (чтобы не было белых квадратов)
 st.markdown("""
     <style>
-    .main { background-color: #f8f9fa; }
-    .stMetric { background-color: #ffffff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 10px; }
+    /* Фон всей страницы — светло-серый */
+    .stApp {
+        background-color: #f4f7f6;
+    }
+    
+    /* Стилизация карточек st.metric */
+    [data-testid="stMetricValue"] {
+        color: #1f1f1f !important; /* Черный цвет цифр */
+        font-weight: bold;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: #4f4f4f !important; /* Серый цвет подписей */
+    }
+
+    div[data-testid="stMetric"] {
+        background-color: #ffffff; /* Белый фон квадрата */
+        border: 1px solid #d1d1d1;
+        padding: 15px 20px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Таблица — делаем текст четким */
+    .stDataFrame {
+        background-color: #ffffff;
+        border-radius: 10px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
