@@ -9,22 +9,63 @@ st.set_page_config(page_title="Energy OS | Partner Panel", page_icon="⚡", layo
 # Убираем "белую хуйню" и фиксируем видимость текста
 st.markdown("""
     <style>
-    /* Общий фон страницы */
-    .stApp { background-color: #f8f9fa; }
+    /* Главный фон и шрифт */
+    .stApp {
+        background-color: #0E1117;
+        color: #E0E0E0;
+    }
     
-    /* Убираем фон, рамки и тени у метрик */
+    /* Стилизация верхних карточек (Metrics) */
     [data-testid="stMetric"] {
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+        background-color: #1A1C24 !important;
+        border: 1px solid #262730 !important;
+        padding: 20px !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
     }
     
-    /* Принудительно делаем текст черным, чтобы он не сливался */
+    /* Цвет цифр в метриках */
     [data-testid="stMetricValue"] {
-        color: #1f1f1f !important;
+        color: #00FFC2 !important; /* Неоновый зеленый */
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.8rem !important;
     }
+    
+    /* Цвет подписей в метриках */
     [data-testid="stMetricLabel"] {
-        color: #4f4f4f !important;
+        color: #808495 !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.8rem !important;
+    }
+
+    /* Стилизация таблицы (Dataframe) */
+    .stDataFrame {
+        border: 1px solid #262730 !important;
+        border-radius: 10px !important;
+    }
+
+    /* Стилизация заголовков */
+    h1, h2, h3 {
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+    }
+
+    /* Плашка Info/Success */
+    .stAlert {
+        background-color: #1A1C24 !important;
+        border: 1px solid #00FFC2 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Убираем стандартный хедер Streamlit для чистоты */
+    header {visibility: hidden;}
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* Настройка разделителя */
+    hr {
+        border-top: 1px solid #262730 !important;
     }
     </style>
     """, unsafe_allow_html=True)
